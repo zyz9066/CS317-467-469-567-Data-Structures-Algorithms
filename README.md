@@ -1,4 +1,4 @@
-# CS317-467-469-567-Data-Structures-Algorithms
+# CS469Data-Structures-and-Algorithms
 Coursework for Data structure and Algorithm, implemented in C++
 
 # Assignment 1 Array Manipulation
