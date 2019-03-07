@@ -1,5 +1,5 @@
 # CS469 Data Structures and Algorithms
-Coursework for Data structure and Algorithm, implemented in C++
+Coursework for Data Structures and Algorithms, implemented in C++.
 
 ## Assignment 1 Array Manipulation
 Design array template and a few functions for manipulation.
