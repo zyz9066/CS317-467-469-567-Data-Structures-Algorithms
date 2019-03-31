@@ -1,13 +1,13 @@
 /**
   * File      :   Exercise2.cpp
   * Created   :   Mar 23, 2019
-  * Modified  :   Mar 24, 2019
+  * Modified  :   Mar 31, 2019
   * Author    :   Tianye Zhao
   * IDE    	  :   Dev C++ 5.11
   ***********************************/
   
 #include "DynamicArray.h"
-#include <iostream>
+#include <cstdio>
 using namespace std;
 
 // main function
@@ -43,11 +43,11 @@ int main( int argc, char ** argv ) {
 		a.display();
 
     	
-        cout << "Press any key to exit." << endl;
-		cin.get();
+        puts("Press any key to exit.");
+		getchar();
         
     } catch (E & e) {
-        cout << "Linked List error: " << e.what() << endl;
+        printf("Dynamic Array error: %s", e.what());
     }
     
     return 0;

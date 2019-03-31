@@ -1,7 +1,7 @@
 /**
   * File      :   DynamicArray.h
   * Created   :   Mar 17, 2019
-  * Modified  :   Mar 24, 2019
+  * Modified  :   Mar 30, 2019
   * Author    :   Tianye Zhao
   * IDE    	  :   Dev C++ 5.11
   ***********************************/
@@ -95,6 +95,9 @@ void DynamicArray<T>::remove(T elem){
 // Display
 template <typename T>
 void DynamicArray<T>::display() {
+	
+	// If list is empty, throw exception
+	if (size == 0) throw E("Dynamic Array is empty!");
 	
 	for (int i = 0; i < size; ++i)
 		cout << array[i] << endl;

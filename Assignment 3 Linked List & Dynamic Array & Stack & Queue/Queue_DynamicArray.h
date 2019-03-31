@@ -23,9 +23,9 @@ private:
 public:
 	Queue_DynamicArray(int = 10);
 	~Queue_DynamicArray();
-	bool empty();
-	T front();
-	void push(T);
+	bool empty() const;
+	T front() const;
+	void push(T const &);
 	T pop();
 };
 
@@ -49,26 +49,28 @@ Queue_DynamicArray<T>::~Queue_DynamicArray(){
 
 // Empty if the queue size is zero
 template <typename T>
-bool Queue_DynamicArray<T>::empty() {
+bool Queue_DynamicArray<T>::empty() const {
 	return queue_size == 0;
 }
 
 // Front: get the first object in the queue
 template <typename T>
-T Queue_DynamicArray<T>::front() {
+T Queue_DynamicArray<T>::front() const {
+	if (empty()) throw E("Queue_DynamicArray is empty!");
 	return array[ifront];
 }
 
 // Pop the first object
 template <typename T>
 T Queue_DynamicArray<T>::pop() {
+	if (empty()) throw E("Queue_DynamicArray is empty!");
 	--queue_size;
 	return array[ifront++];
 }
 
 // Push an object onto the queue
 template <typename T>
-void Queue_DynamicArray<T>::push(T obj) {
+void Queue_DynamicArray<T>::push(T const &obj) {
 	if (queue_size == array_capacity) {
 		T *temp_array = new T[2*array_capacity];
 		

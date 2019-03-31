@@ -1,7 +1,7 @@
 /**
   * File      :   QUEUE_CIRCULAR_DynamicArray.h
   * Created   :   Mar 23, 2019
-  * Modified  :   Mar 24, 2019
+  * Modified  :   Mar 31, 2019
   * Author    :   Tianye Zhao
   * IDE    	  :   Dev C++ 5.11
   ***********************************/
@@ -9,7 +9,6 @@
 #ifndef _QUEUE_CIRCULAR_DYNAMICARRAY_H
 #define _QUEUE_CIRCULAR_DYNAMICARRAY_H
 
-#include <exception>
 using namespace std;
 
 // Queue_Circular_DynamicArray template
@@ -24,9 +23,9 @@ private:
 public:
 	Queue_Circular_DynamicArray(int = 10);
 	~Queue_Circular_DynamicArray();
-	bool empty();
-	T front();
-	void push(T);
+	bool empty() const;
+	T front() const;
+	void push(T const &);
 	T pop();
 };
 
@@ -50,26 +49,28 @@ Queue_Circular_DynamicArray<T>::~Queue_Circular_DynamicArray(){
 
 // Empty if the queue size is zero
 template <typename T>
-bool Queue_Circular_DynamicArray<T>::empty() {
+bool Queue_Circular_DynamicArray<T>::empty() const {
 	return queue_size == 0;
 }
 
 // Front: get the first object in the queue
 template <typename T>
-T Queue_Circular_DynamicArray<T>::front() {
+T Queue_Circular_DynamicArray<T>::front() const {
+	if (empty()) throw E("Queue_CircularDynamicArray is empty!");
 	return array[ifront];
 }
 
 // Pop the first object
 template <typename T>
 T Queue_Circular_DynamicArray<T>::pop() {
+	if (empty()) throw E("Queue_CircularDynamicArray is empty!");
 	--queue_size;
 	return array[ifront++];
 }
 
 // Push an object onto the queue
 template <typename T>
-void Queue_Circular_DynamicArray<T>::push(T obj) {
+void Queue_Circular_DynamicArray<T>::push(T const &obj) {
 	if (queue_size == array_capacity) {
 		T *temp_array = new T[2*array_capacity];
 		

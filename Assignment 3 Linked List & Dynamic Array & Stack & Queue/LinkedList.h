@@ -1,7 +1,7 @@
 /**
   * File      :   LinkedList.h
   * Created   :   Mar 17, 2019
-  * Modified  :   Mar 24, 2019
+  * Modified  :   Mar 31, 2019
   * Author    :   Tianye Zhao
   * IDE    	  :   Dev C++ 5.11
   ***********************************/
@@ -9,8 +9,18 @@
 #ifndef _LINKEDLIST_H
 #define _LINKEDLIST_H
 
+#include <exception>
 #include <iostream>
 using namespace std;
+
+// Exception class
+class E : public exception {
+    const char *msg;
+    E(){};    // no default constructor
+public:
+    explicit E(const char *s) throw() : msg(s) {}
+    const char* what() const throw() {return msg;}
+};
 
 // LinkedList template
 template <typename T>
@@ -27,22 +37,22 @@ public:
 	LinkedList(void) { head = NULL; }	// Constructor
 	LinkedList(T);
 	~LinkedList(void);	// Destructor
-	void appendNode(T);
+	void appendNode(T const &);
 
-	T& top();
+	T& top() const;
 
 	T pop_front();
 
-	bool empty();
-	void insertNode(T);
-	void deleteNode(T, bool = false);
+	bool empty() const;
+	void insertNode(T const &);
+	void deleteNode(T const &, bool = false);
 	void displayList(void);
-	int count(T);
-	int length();
+	int count(T const &) const;
+	int length() const;
 	void sortBySelection();
 	void sortByInsertion();
 
-	ListNode *getNode(int);
+	ListNode *getNode(int) const;
 
 	T& get(int);
 
@@ -76,7 +86,7 @@ LinkedList<T>::~LinkedList() {
 
 // Append a node at the end of the linked list
 template <typename T>
-void LinkedList<T>::appendNode(T info) {
+void LinkedList<T>::appendNode(T const &info) {
 
 	// Allocate a new node & store info
 	ListNode *newNode = new ListNode;
@@ -99,14 +109,19 @@ void LinkedList<T>::appendNode(T info) {
 
 // Get the first element of the linked list
 template <typename T>
-T& LinkedList<T>::top() {
+T& LinkedList<T>::top() const {
+	
+	// If list is empty, throw exception
+	if (!head) throw E("Linked List is empty!");
 	return head->value;
 }
 
 // Remove first node of the linked list and return its value
 template <typename T>
 T LinkedList<T>::pop_front() {
-
+	
+	// If list is empty, throw exception
+	if (!head) throw E("Linked List is empty!");
 	ListNode *tempNode = head;
 	T tempVal = head->value;
 	head = head->next;
@@ -116,13 +131,13 @@ T LinkedList<T>::pop_front() {
 
 // Test if the linked list is empty or not
 template <typename T>
-bool LinkedList<T>::empty() {
+bool LinkedList<T>::empty() const {
 	return !head;
 }
 
 // Insert a node in the beginning of the linked list
 template <typename T>
-void LinkedList<T>::insertNode(T info) {
+void LinkedList<T>::insertNode(T const &info) {
 
 	// Allocate a new node & store info
 	ListNode *newNode = new ListNode;
@@ -141,9 +156,10 @@ void LinkedList<T>::insertNode(T info) {
 // Delete a node from the linked list, if removeAll is true, all occurrence
 // of info will be removed, otherwise only first occurrence.
 template <typename T>
-void LinkedList<T>::deleteNode(T info, bool removeAll) {
-
-	if (!head) return;
+void LinkedList<T>::deleteNode(T const &info, bool removeAll) {
+	
+	// If list is empty, throw exception
+	if (!head) throw E("Linked List is empty!");
 
 	ListNode *nodePtr;
 
@@ -189,8 +205,9 @@ void LinkedList<T>::deleteNode(T info, bool removeAll) {
 // Display all elements of the linked list
 template <typename T>
 void LinkedList<T>::displayList(void) {
-
-	if (!head) return;
+	
+	// If list is empty, throw exception
+	if (!head) throw E("Linked List is empty!");
 
 	ListNode *nodePtr = head;
 
@@ -202,9 +219,10 @@ void LinkedList<T>::displayList(void) {
 
 // Count the occurrence of val in the linked list
 template <typename T>
-int LinkedList<T>::count(T val) {
-
-	if (!head) return -1;
+int LinkedList<T>::count(T const &val) const {
+	
+	// If list is empty, throw exception
+	if (!head) throw E("Linked List is empty!");
 
 	ListNode *nodePtr = head;
 
@@ -219,9 +237,10 @@ int LinkedList<T>::count(T val) {
 
 // Count the number of nodes in the linked list
 template <typename T>
-int LinkedList<T>::length() {
-
-	if (!head) return -1;
+int LinkedList<T>::length() const {
+	
+	// If list is empty, throw exception
+	if (!head) throw E("Linked List is empty!");
 
 	ListNode *nodePtr = head;
 
@@ -237,12 +256,12 @@ int LinkedList<T>::length() {
 
 // Get the i-th node of the linked list
 template <typename T>
-typename LinkedList<T>::ListNode *LinkedList<T>::getNode(int i) {
+typename LinkedList<T>::ListNode *LinkedList<T>::getNode(int i) const {
 
 	// If list is empty, throw exception
-	if (!head) return NULL;
+	if (!head) throw E("Linked List is empty!");
 
-	if (i < 0 || i >= length()) return NULL;
+	if (i < 0 || i >= length()) throw E("Invalid index!");
 
 	ListNode *nodePtr = head;
 
@@ -259,25 +278,30 @@ typename LinkedList<T>::ListNode *LinkedList<T>::getNode(int i) {
 // Get element of the i-th node of the linked list
 template <typename T>
 T& LinkedList<T>::get(int i) {
-
-	if (i > 0 && i < length()) {
-		ListNode *nodePtr = head;
-
-		int count = 0;
-		while (count != i) {
-			++count;
-			nodePtr = nodePtr->next;
-		}
 	
-		return nodePtr->value;
+	// If list is empty, throw exception
+	if (!head) throw E("Linked List is empty!");
+
+	if (i < 0 || i >= length()) throw E("Invalid index!");
+
+	ListNode *nodePtr = head;
+
+	int count = 0;
+	while (count != i) {
+		++count;
+		nodePtr = nodePtr->next;
 	}
+
+	return nodePtr->value;
+
 }
 
 // Remove all elements of the linked list
 template <typename T>
 void LinkedList<T>::clear() {
 	
-	if (!head) return;
+	// If list is empty, throw exception
+	if (!head) throw E("Linked List is already empty!");
 	
 	ListNode *nodePtr = head, *nextNode = new ListNode;
 	while (nodePtr) {
@@ -293,7 +317,8 @@ void LinkedList<T>::clear() {
 template <typename T>
 void LinkedList<T>::sortBySelection() {
 
-	if (!head) return;
+	// If list is empty, throw exception
+	if (!head) throw E("Linked List is empty!");
 
 	ListNode *nodePtr = new ListNode, *prevPtr = new ListNode;
 	ListNode *currPtr = head, *currPrevPtr = head;
@@ -313,6 +338,7 @@ void LinkedList<T>::sortBySelection() {
 		}
 		
 		if (currPtr == minPtr) {
+			currPrevPtr = currPtr;
 			currPtr = currPtr->next;
 			continue;
 		}
@@ -332,7 +358,8 @@ void LinkedList<T>::sortBySelection() {
 template <typename T>
 void LinkedList<T>::sortByInsertion() {
 	
-	if (!head) return;
+	// If list is empty, throw exception
+	if (!head) throw E("Linked List is empty!");
 
 	ListNode *nodePtr = new ListNode, *prevPtr = new ListNode, *endPtr = head;
 
@@ -360,7 +387,8 @@ void LinkedList<T>::sortByInsertion() {
 template <typename T>
 void LinkedList<T>::reverse() {
 	
-	if (!head) return;
+	// If list is empty, throw exception
+	if (!head) throw E("Linked List is empty!");
 	
 	ListNode *nodePtr = head->next, *prevPtr = head, *nextPtr = head->next->next;
 	prevPtr->next = NULL;

@@ -1,7 +1,7 @@
 /**
   * File      :   Stack_DynamicArray.h
   * Created   :   Mar 23, 2019
-  * Modified  :   Mar 24, 2019
+  * Modified  :   Mar 31, 2019
   * Author    :   Tianye Zhao
   * IDE    	  :   Dev C++ 5.11
   ***********************************/
@@ -9,7 +9,6 @@
 #ifndef _STACK_DYNAMICARRAY_H
 #define _STACK_DYNAMICARRAY_H
 
-#include <exception>
 using namespace std;
 
 // Stack_DynamicArray template
@@ -22,9 +21,9 @@ private:
 public:
 	Stack_DynamicArray(int = 10);
 	~Stack_DynamicArray();
-	bool empty();
-	T top();
-	void push(T);
+	bool empty() const;
+	T top() const;
+	void push(T const &);
 	T pop();
 };
 
@@ -46,25 +45,27 @@ Stack_DynamicArray<T>::~Stack_DynamicArray(){
 
 // Empty if the stack size is zero
 template <typename T>
-bool Stack_DynamicArray<T>::empty() {
+bool Stack_DynamicArray<T>::empty() const {
 	return stack_size == 0;
 }
 
 // Top: get the last object which located at index n-1 if there are n objects in the stack
 template <typename T>
-T Stack_DynamicArray<T>::top() {
+T Stack_DynamicArray<T>::top() const {
+	if (empty()) throw E("Stack_DynamicArray is empty!");
 	return array[stack_size - 1];
 }
 
 // Pop an object by simply reducing the size 
 template <typename T>
 T Stack_DynamicArray<T>::pop() {
+	if (empty()) throw E("Stack_DynamicArray is empty!");
 	return array[--stack_size];
 }
 
 // Push an object onto the stack
 template <typename T>
-void Stack_DynamicArray<T>::push(T obj) {
+void Stack_DynamicArray<T>::push(T const &obj) {
 	if (stack_size == array_capacity) {
 		T *temp_array = new T[2*array_capacity];
 		
