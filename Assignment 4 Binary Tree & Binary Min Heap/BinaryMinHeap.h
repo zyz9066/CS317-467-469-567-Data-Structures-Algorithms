@@ -71,6 +71,8 @@ BinaryMinHeap<T>::BinaryMinHeap(int Capacity) {
 // to heapify a subtree with the root at given index
 template <typename T>
 void BinaryMinHeap<T>::percolate(int nodeI) {
+	if (nodeI > size || nodeI < 1) throw E("Invalid Index!");
+	
 	int child;
 	T tmp = move(array[nodeI]);
 	
@@ -111,14 +113,16 @@ T BinaryMinHeap<T>::extractMin() {
 // deletes key at index nodeI
 template <typename T>
 void BinaryMinHeap<T>::deleteNode(int nodeI) {
-	array[nodeI] = array[size--];
+	if (nodeI > size || nodeI < 1) throw E("Invalid Index!");
+	
+	array[nodeI] = move(array[size--]);
 	percolate(nodeI);
 }
 
 // inserts a new node which key is val
 template <typename T>
 void BinaryMinHeap<T>::insertKey(T val) {
-	if (size == capacity-1) throw E("BinaryMinHeap is full!");
+	if (size == capacity-1) throw E("Heap is full!");
 	
 	// percolate up
 	int hole = ++size;
