@@ -35,9 +35,9 @@ private:
 
 public:
 	BinaryMinHeap(void) {	// Constructor
-		array = NULL;
+		array = NULL;	// The heap array
 		capacity = 0;
-		size = 0;
+		size = 0;	// Number of elements in heap
 	}
 	BinaryMinHeap(int Capacity);
 	// a destructor that remove all elements of the binary min-heap
