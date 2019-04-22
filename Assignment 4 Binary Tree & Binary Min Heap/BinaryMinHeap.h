@@ -16,12 +16,14 @@ using namespace std;
 
 // Exception class
 class E : public exception {
-    const char *msg;
+    const char * msg;
     E(){};    // no default constructor
 public:
-    explicit E(const char *s) throw() : msg(s) {}
-    const char* what() const throw() {return msg;}
+    explicit E(const char * s) throw() : msg(s) {}
+    const char * what() const throw() { return msg; }
 };
+
+const E UnderflowException("BinaryMinHeap is empty!");
 
 // BinaryTree template
 template <typename T>
@@ -38,7 +40,8 @@ public:
 		size = 0;
 	}
 	BinaryMinHeap(int Capacity);
-	~BinaryMinHeap(void) { delete[] array; }	// Destructor
+	// a destructor that remove all elements of the binary min-heap
+	~BinaryMinHeap(void) { delete[] array; }
 	void percolate(int);
 	T getMin();
 	T extractMin();
@@ -57,6 +60,7 @@ void swap(T *x, T *y) {
 	*y = temp;
 }
 
+// the constructor to create a binary min-heap with a capacity
 template <typename T>
 BinaryMinHeap<T>::BinaryMinHeap(int Capacity) {
 	array = new T[Capacity];
@@ -64,63 +68,79 @@ BinaryMinHeap<T>::BinaryMinHeap(int Capacity) {
 	size = 0;
 }
 
+// to heapify a subtree with the root at given index
 template <typename T>
 void BinaryMinHeap<T>::percolate(int nodeI) {
-	int minIdx;
-	if (2*nodeI+1 <= size) minIdx = getLeftChild(nodeI) < getRightChild(nodeI) ? 2*nodeI : 2*nodeI+1;
-	else if(2*nodeI == size) minIdx = 2*nodeI;
-	else return;
-	if (array[nodeI] > array[minIdx]) {
-		swap(array[nodeI], array[minIdx]);
-		percolate(minIdx);
+	int child;
+	T tmp = move(array[nodeI]);
+	
+	for ( ; nodeI*2 <= size; nodeI=child) {
+		child = nodeI*2;
+		if (child != size && array[child+1] < array[child]) ++child;
+		if (array[child] < tmp) array[nodeI] = move(array[child]);
+		else break;
 	}
+	array[nodeI] = move(tmp);
 }
 
+// gets the minimum value of the binary min-heap
 template <typename T>
 T BinaryMinHeap<T>::getMin() {
+	if (empty()) throw UnderflowException;
+	
 	return array[1];
 }
 
+// tests if the binary min-heap is empty or no
 template <typename T>
 bool BinaryMinHeap<T>::empty() {
 	return size == 0;
 }
 
+// removes minimum elements (or root) from the binary min-heap
 template <typename T>
 T BinaryMinHeap<T>::extractMin() {
-	T temp = array[1];
-	array[1] = array[size--];
+	if (empty()) throw UnderflowException;
+	
+	T minItem = move(array[1]);
+	array[1] = move(array[size--]);
 	percolate(1);
-	return temp;
+	return minItem;
 }
 
+// deletes key at index nodeI
 template <typename T>
 void BinaryMinHeap<T>::deleteNode(int nodeI) {
 	array[nodeI] = array[size--];
 	percolate(nodeI);
 }
 
+// inserts a new node which key is val
 template <typename T>
 void BinaryMinHeap<T>::insertKey(T val) {
-	array[++size] = val;
-
-	int idx = size, parent = floor(idx/2);
-	while (idx > 1 && array[parent] > array[idx]) {
-		swap(array[parent], array[idx]);
-		idx = parent;
-		parent = floor(parent/2);
-	}
+	if (size == capacity-1) throw E("BinaryMinHeap is full!");
+	
+	// percolate up
+	int hole = ++size;
+	T copy = x;
+	
+	array[0] = move(copy);
+	for ( ; x < array[hole/2]; hole/=2) array[hole] = move(array[hole/2]);
+	array[hole] = move(array[0]);
 }
 
+// gets the left child of nodeI
 template <typename T>
 T BinaryMinHeap<T>::getLeftChild(int nodeI) {
 	if (nodeI*2 > size) throw E("No left child!");
     return array[nodeI*2];
 }
 
+// gets the right child of nodeI
 template <typename T>
 T BinaryMinHeap<T>::getRightChild(int nodeI) {
     if (nodeI*2+1 > size) throw E("No right child!");
 	return array[nodeI*2+1];
 }
+
 #endif // _BINARYMINHEAP_H
