@@ -29,9 +29,9 @@ class BinaryTree {
 private:
 	// Declare a structure for the list
 	struct TreeNode {
-		T value;
-		struct TreeNode *left;
-		struct TreeNode *right;
+		T value;	// The data in the node
+		struct TreeNode *left;	// Left node
+		struct TreeNode *right;	// Right node
 	};
 	TreeNode *root;	// tree root pointer
 
@@ -43,8 +43,16 @@ private:
 		node->right = NULL;
 		return node;
 	}
-
-    void clr(TreeNode*);
+	
+	void insert(const T & x, TreeNode * & t);
+	void insert(T && x, TreeNode * & t);
+	void remove(const T & x, Treeode * & t);
+	TreeNode * findMin(TreeNode *t) const;
+	TreeNode * findMax(TreeNode *t) const;
+	bool contains(const T & x, TreeNode *t) const;
+	void makeEmpty(TreeNode * & t);
+	TreeNode * clone(TreeNode *t) const;
+	
     TreeNode* getRoot() { return root; }
     void preOrder(TreeNode*);
     void inOrder(TreeNode*);
@@ -59,6 +67,9 @@ private:
 	int countSemiLeaf(TreeNode*);
 
 public:
+	
+	BinaryTree(const BinaryTree & rhs);
+	
 	BinaryTree(void) { root = NULL; }	// Constructor
 	BinaryTree(T);
 	~BinaryTree(void);	// Destructor
@@ -82,25 +93,48 @@ public:
 	int countSemiLeafNodes();
 };
 
+/**
+ * Copy constructor
+ */
+BinaryTree(const BinaryTree & rhs) : root{ nullptr } {
+	root = clone(rhs.root);
+}
+
+/**
+ * Internal method to clone subtree
+ */
+TreeNode * clone(TreeNode *t) const {
+	if (t == nullptr) return nullptr;
+	else return new TreeNode{ t->value, clone(t->left), clone(t->right) };
+}
+
+// the constructor to create a binary tree which first node contains the value info and children are null
 template <typename T>
 BinaryTree<T>::BinaryTree(T info) {
 	TreeNode *newNode = createNode(info);
 	root = newNode;
 }
 
+// a destructor that remove all elements of binary tree
 template <typename T>
 BinaryTree<T>::~BinaryTree() {
-	clear();
+	makeEmpty(root);
 }
 
+/**
+ * Internal method to make subtree empty.
+ */
 template <typename T>
-void BinaryTree<T>::clr(TreeNode *node) {
-    if (node == NULL) return;
-	clr(node->left);
-	clr(node->right);
-	delete node;
-	node = NULL;
+void makeEmpty(TreeNode * & t) {
+    if (t != nullptr) {
+    	makeEmpty(t->left);
+    	makeEmpty(t->right);
+    	delete t;
+	}
+	t = nullptr;
 }
+
+// to remove all elements of the binary tree
 template <typename T>
 void BinaryTree<T>::clear() {
 	if (root == NULL) throw E("Binary Tree is empty!");
@@ -108,11 +142,13 @@ void BinaryTree<T>::clear() {
 	root = NULL;
 }
 
+// to get the first element of the binary tree
 template <typename T>
 T& BinaryTree<T>::top() {
 	return root->value;
 }
 
+// to remove first node of the binary tree and to return its value
 template <typename T>
 T BinaryTree<T>::pop_front() {
     if (root != NULL) {
@@ -127,34 +163,78 @@ T BinaryTree<T>::pop_front() {
     }
 }
 
+// to test if the binary tree is empty or no
 template <typename T>
 bool BinaryTree<T>::empty() {
 	return root == NULL;
 }
 
-template <typename T>
-void BinaryTree<T>::insertNode(T info) {
-	TreeNode *newNode = createNode(info);
-	if (root == NULL) {
-		root = newNode;
-		return;
-	}
-	TreeNode *nodePtr = root, *parentNode;
-	while (nodePtr != NULL) {
-		parentNode = nodePtr;
-		if (nodePtr->value > info) {
-			nodePtr = nodePtr->left;
-		} else {
-			nodePtr = nodePtr->right;
-		}
-	}
-	if (parentNode->value > info) {
-		parentNode->left = newNode;
-	} else {
-		parentNode->right = newNode;
-	}
+/**
+ * Internal method to insert into a subtree.
+ * x is the item to insert.
+ * t is the node that roots the subtree.
+ * Set the new root of the subtree.
+ */
+void insert(const T & x, TreeNode * & t) {
+	if (t == nullptr) t = createNode(move(x));
+	else if (x < t->value) insert(move(x), t->left);
+	else if (t->value < x) insert(move(x), t->right);
 }
 
+// to insert a node in the binary tree
+template <typename T>
+void BinaryTree<T>::insertNode(T info) {
+	insert(info, root);
+}
+
+/**
+ * Internal method to test if an item is in a subtree.
+ * x is item to search for.
+ * t is the node that roots the subtree.
+ */
+bool contains(const T & x, TreeNode *t) const {
+	if (t == nullptr) return false;
+	else if (x < t->value) return contains(x, t->left);
+	else if (t->value < x) return contains(x, t->right);
+	else return true;	// Match
+}
+
+/**
+ * Internal method to find the smallest item in a subtree t.
+ * Return node containing the smallest item.
+ */
+TreeNode *  findMin(TreeNode *t) const {
+	if (t == nullptr) return nullptr;
+	if (t->left == nullptr) return t;
+	return findMin(t->left);
+}
+
+/**
+ * Internal method to find the largest item in a subtree t.
+ * Return node containing the largest item.
+ */
+TreeNode *  findMax(TreeNode *t) const {
+	if (t != nullptr) return nullptr;
+	while (t->right != nullptr) t = t->right;
+	return t;
+}
+
+/**
+ * Internal method to remove from a subtree.
+ * x is the item to remove.
+ * t is the node that roots the subtree.
+ * Set the new root of the subtree.
+ */
+void remove(const T & x, TreeNode * & t) {
+	if (t == nullptr) return;	//Item not found; do nothing
+	if (x < t->value) remove(x, t->left);
+	else if (t->value < x) remove(x, t->right);
+	else if (t->left != nullptr && t->right != nullptr) {	// Two children
+		t->value = findMin(t->right)->value;
+	}
+}
+// to delete a node the binary tree, if removerAll is true, all occurrence of info will be removed,
+// otherwise, only the first occurrence of info will be removed
 template <typename T>
 void BinaryTree<T>::deleteNode(T info, bool removeAll) {
 	if (root == NULL) return;
@@ -202,6 +282,7 @@ void BinaryTree<T>::deleteNode(T info, bool removeAll) {
 	}
 }
 
+// to display the binary tree using pre-order traversal
 template <typename T>
 void BinaryTree<T>::preOrder(TreeNode *node) {
 	if (node == NULL) return;
@@ -216,6 +297,7 @@ void BinaryTree<T>::preOrderTraversal() {
 	preOrder(root);
 }
 
+// to display the binary tree using in-order traversal
 template <typename T>
 void BinaryTree<T>::inOrder(TreeNode *node) {
 	if (node == NULL) return;
@@ -230,6 +312,7 @@ void BinaryTree<T>::inOrderTraversal() {
 	inOrder(root);
 }
 
+// to display the binary tree using post-order traversal
 template <typename T>
 void BinaryTree<T>::postOrder(TreeNode *node) {
 	if (node == NULL) return;
@@ -244,6 +327,7 @@ void BinaryTree<T>::postOrderTraversal() {
 	postOrder(root);
 }
 
+// to count the nodes which value is lesser than val in the binary tree
 template <typename T>
 int BinaryTree<T>::countLess(TreeNode* node, T val) {
     if (node == NULL) return 0;
@@ -256,6 +340,7 @@ int BinaryTree<T>::countLesserThan(T val) {
 	return countLess(root, val);
 }
 
+// to count the nodes which value is greater than val in the binary tree
 template <typename T>
 int BinaryTree<T>::countGreat(TreeNode *node, T val) {
     if (node == NULL) return 0;
@@ -270,6 +355,7 @@ int BinaryTree<T>::countGreaterThan(T val) {
 	return countGreat(root, val);
 }
 
+// to count the number of nodes in the binary tree
 template <typename T>
 int BinaryTree<T>::count(TreeNode *node) {
 	if (node == NULL) return 0;
@@ -281,6 +367,7 @@ int BinaryTree<T>::length() {
 	return count(root);
 }
 
+// to compute the height of the binary tree
 template <typename T>
 int BinaryTree<T>::h(TreeNode *node) {
 	if (node == NULL) return 0;
@@ -292,6 +379,7 @@ int BinaryTree<T>::height() {
 	return h(root);
 }
 
+// swaps the left and right pointers of the tree
 template <typename T>
 void BinaryTree<T>::mir(TreeNode *node) {
     if (node == NULL) return;
@@ -307,6 +395,7 @@ void BinaryTree<T>::mirror() {
 	mir(root);
 }
 
+// determines if the current binary tree is identical to the binary tree B
 template <typename T>
 bool BinaryTree<T>::identical(TreeNode *nodeA, TreeNode *nodeB) {
 	if (nodeA == NULL && nodeB == NULL) return true;
@@ -319,12 +408,14 @@ bool BinaryTree<T>::isIdenticalTo(BinaryTree &B) {
 	return identical(root, B.getRoot());
 }
 
+// determines if the current binary tree is siomorphic with the binary tree B
 template <typename T>
 bool BinaryTree<T>::isIsomorphicWith(BinaryTree &B) {
 	B.mirror();
 	return isIdenticalTo(B);
 }
 
+// counts the number of leaf nodes of the binary tree
 template <typename T>
 int BinaryTree<T>::countLeaf(TreeNode* node) {
     if (node == NULL) return 0;
@@ -337,6 +428,7 @@ int BinaryTree<T>::countLeafNodes() {
 	return countLeaf(root);
 }
 
+// counts the number of semi-leaf nodes in the binary tree
 template <typename T>
 int BinaryTree<T>::countSemiLeaf(TreeNode* node) {
     if (node == NULL) return 0;
