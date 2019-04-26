@@ -4,8 +4,8 @@
   * Author    :   Tianye Zhao
   * IDE    	  :   Dev C++ 5.11
   ***********************************/
-#include "array.h"
-#include "sorting.h"
+#include "Array.h"
+#include "Sorting.h"
 #include <cstdio>
 #include <stdlib.h>
 #include <time.h>
@@ -30,7 +30,7 @@ Array<int> createRandomArray(const int size) {
         
     // Initialize array with random ascending numbers
     for (int i = 0; i < size; i++) {
-        A.insertLast(rand() % (size*10));
+        A.push_back(rand() % (size*10));
     }
     
     return A;
