@@ -1,7 +1,7 @@
 // Exercise3.cpp by Tianye Zhao
 // IDE: Dev-C++ 5.11
 // updated 2019-02-10
-#include "array.h"
+#include "Array.h"
 #include <iostream>
 #include <stdlib.h>
 #include <time.h>
@@ -18,7 +18,7 @@ int main( int argc, char ** argv ) {
         
         // Initialize array with random numbers
         for (int i = 0; i < 10; i++) {
-        	A.insertLast(rand() % 100);
+        	A.push_back(rand() % 100);
         }
         
         // Display array
