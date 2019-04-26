@@ -13,7 +13,7 @@ int main( int argc, char ** argv ) {
         
         // Initialize array
         for (int i = 0; i < 100; i++) {
-            A.insertLast(2 * i + 1);
+            A.push_back(2 * i + 1);
         } 
         
         // Display array
