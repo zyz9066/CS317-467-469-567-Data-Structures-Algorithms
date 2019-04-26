@@ -1,4 +1,4 @@
-// array.h by Tianye Zhao
+// Array.h by Tianye Zhao
 // IDE: Dev-C++ 5.11
 // updated 2019-02-10 for CS469 Assignment 1
 #ifndef _ARRAY
