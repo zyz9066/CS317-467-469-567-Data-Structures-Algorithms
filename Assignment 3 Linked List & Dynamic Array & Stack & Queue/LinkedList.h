@@ -30,10 +30,98 @@ private:
 	struct ListNode {
 		T value;
 		struct ListNode *next;
+		
+		ListNode(const T& d = T{ }, ListNode* n = nullptr)
+			: value{ d }, next{ n } { }
 	};
 
 	ListNode *head;	//List head pointer
 public:
+	class const_iterator {
+		public:
+			const_iterator( ) : current{ nullptr } { }
+			
+			const T & operator* ( ) const { return retrieve( ); }
+			
+			const_iterator & operator++ ( ) {
+				current = current->next;
+				return *this;
+			}
+			
+			const_iterator operator++ ( int ) {
+				const_iterator old = *this;
+				++(*this);
+				return old;
+			}
+			
+			bool operator== (const const_iterator & rhs) const { return current == rhs.current; }
+			bool operator!= (const const_iterator & rhs) const { return !(*this == rhs); }
+			
+		protected:
+			ListNode *current;
+			
+			T & retrieve( ) const { return current->value; }
+			
+			const_iterator(ListNode *p) : current{ p } { }
+			
+			friend class LinkedList<T>;
+				
+	};
+	
+	class iterator : public const_iterator {
+		public:
+			iterator() { }
+			
+			T & operator* () { return const_iterator::retrieve(); }
+			
+			iterator & operator++ () {
+				this->current = this->current->next;
+				return *this;
+			}
+			
+			iterator operator++ ( int ) {
+				iterator old = *this;
+				++(*this);
+				return old;
+			}
+			
+		protected:
+			iterator(ListNode *p) : const_iterator{ p } { }
+			
+			friend class LinkedList<T>;
+
+	};
+	
+	LinkedList(const LinkedList & rhs) {
+		init();
+		for (auto & x : rhs) appendNode(x);
+	}
+	
+	LinkedList & operator= (const LinkedList & rhs) {
+		LinkedList copy = rhs;
+		swap(*this, copy);
+		return *this;
+	}
+	
+	LinkedList(LinkedList & rhs) : head{ rhs.head } { rhs.head = nullptr; }
+	
+	LinkedList & operator= (linkedList && rhs) {
+		swap(head, rhs.head);
+		return *this;
+	}
+	
+	void init() {
+		head = new ListNode;
+		head->next = nullptr;
+	}
+	
+	iterator begin() { return { head->next }; }
+	const_iterator begin() { return { head->next }; }
+	
+	bool empty();
+	
+	void clear();
+	
 	LinkedList(void) { head = NULL; }	// Constructor
 	LinkedList(T);
 	~LinkedList(void);	// Destructor
@@ -41,9 +129,7 @@ public:
 
 	T& top() const;
 
-	T pop_front();
-
-	bool empty() const;
+	T pop_front();	
 	void insertNode(T const &);
 	void deleteNode(T const &, bool = false);
 	void displayList(void);
@@ -56,10 +142,21 @@ public:
 
 	T& get(int);
 
-	void clear();
-
 	void reverse();
+	
+	iterator erase( iterator from, iterator to ) {
+		for (iterator itr = from; itr != to; ) itr = erase(itr);
+		return to;
+	}
 };
+
+// Swapping by three copies
+template <typename T>
+void swap(T & x, T & y) {
+	T tmp = x;
+	x = y;
+	y = tmp;
+}
 
 // Constructor to create a linked list which first node contains
 // the value info and the next pointer is null
