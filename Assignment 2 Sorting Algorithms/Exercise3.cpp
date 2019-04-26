@@ -4,7 +4,7 @@
   * Author    :   Tianye Zhao
   * IDE    	  :   Dev C++ 5.11
   ***********************************/
-#include "array.h"
+#include "Array.h"
 #include <cstdio>
 using namespace std;
 
@@ -24,8 +24,8 @@ int main( int argc, char ** argv ) {
         for (int i = 0; i < A.size(); i++) {
         	printf("Please enter integer %d: ", i+1);
         	scanf("%d", &value);
-          	A.insertLast(value);
-          	B.insertLast(value);
+          	A.push_back(value);
+          	B.push_back(value);
         } 
         getchar();
         
