@@ -1,7 +1,7 @@
 // Exercise2.cpp by Tianye Zhao
 // IDE: Dev-C++ 5.11
 // updated 2019-02-10
-#include "array.h"
+#include "Array.h"
 #include <iostream>
 using namespace std;
 
