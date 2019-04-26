@@ -17,7 +17,7 @@ int main( int argc, char ** argv ) {
         for (int i = 0; i < 10; i++) {
         	cout << "Integer " << i+1 << ": ";
         	cin >> number;
-        	A.insertLast(number);
+        	A.push_back(number);
         } 
         
         // Ask for number to delete
