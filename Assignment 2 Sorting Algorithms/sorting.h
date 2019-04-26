@@ -7,7 +7,7 @@
 #ifndef _SORTING
 #define _SORTING
 
-#include "array.h"
+#include "Array.h"
 #include <cstdio>
 #include <stdlib.h>
 #include <time.h>
