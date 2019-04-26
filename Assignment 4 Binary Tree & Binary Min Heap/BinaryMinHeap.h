@@ -11,7 +11,7 @@
 
 #include <exception>
 #include <iostream>
-#include <math.h>
+
 using namespace std;
 
 // Exception class
@@ -32,13 +32,16 @@ private:
 	T *array;	// An array to store the binary min-heap
 	int capacity;	// the capacity of this array
 	int size;	// the current size of this array
+	
+	void buildHeap();
 
 public:
 	BinaryMinHeap(void) {	// Constructor
 		array = NULL;	// The heap array
-		capacity = 0;
+		capacity = 100;
 		size = 0;	// Number of elements in heap
 	}
+	
 	BinaryMinHeap(int Capacity);
 	// a destructor that remove all elements of the binary min-heap
 	~BinaryMinHeap(void) { delete[] array; }
@@ -47,9 +50,9 @@ public:
 	T extractMin();
 	void deleteNode(int nodeI);
 	//void decreaseKey(int node, int new_val);
-	void insertKey(T);
-	T getLeftChild(int);
-	T getRightChild(int);
+	void insertKey(T val);
+	T getLeftChild(int nodeI);
+	T getRightChild(int nodeI);
 	bool empty();
 };
 
@@ -58,6 +61,15 @@ void swap(T *x, T *y) {
 	T temp = *x;
 	*x = *y;
 	*y = temp;
+}
+
+/**
+ * Establish heap order property from an arbitrary
+ * arrangement of items. Runs in linear time.
+ */
+template <typename T>
+void BinaryMinHeap<T>::buildHeap() {
+	for (int i = size/2; i > 0; --i) percolate(i);
 }
 
 // the constructor to create a binary min-heap with a capacity
@@ -74,15 +86,15 @@ void BinaryMinHeap<T>::percolate(int nodeI) {
 	if (nodeI > size || nodeI < 1) throw E("Invalid Index!");
 	
 	int child;
-	T tmp = move(array[nodeI]);
+	T tmp = array[nodeI];
 	
 	for ( ; nodeI*2 <= size; nodeI=child) {
 		child = nodeI*2;
 		if (child != size && array[child+1] < array[child]) ++child;
-		if (array[child] < tmp) array[nodeI] = move(array[child]);
+		if (array[child] < tmp) array[nodeI] = array[child];
 		else break;
 	}
-	array[nodeI] = move(tmp);
+	array[nodeI] = tmp;
 }
 
 // gets the minimum value of the binary min-heap
@@ -104,8 +116,8 @@ template <typename T>
 T BinaryMinHeap<T>::extractMin() {
 	if (empty()) throw UnderflowException;
 	
-	T minItem = move(array[1]);
-	array[1] = move(array[size--]);
+	T minItem = array[1];
+	array[1] = array[size--];
 	percolate(1);
 	return minItem;
 }
@@ -115,7 +127,7 @@ template <typename T>
 void BinaryMinHeap<T>::deleteNode(int nodeI) {
 	if (nodeI > size || nodeI < 1) throw E("Invalid Index!");
 	
-	array[nodeI] = move(array[size--]);
+	array[nodeI] = array[size--];
 	percolate(nodeI);
 }
 
@@ -126,11 +138,9 @@ void BinaryMinHeap<T>::insertKey(T val) {
 	
 	// percolate up
 	int hole = ++size;
-	T copy = x;
 	
-	array[0] = move(copy);
-	for ( ; x < array[hole/2]; hole/=2) array[hole] = move(array[hole/2]);
-	array[hole] = move(array[0]);
+	for ( ; val < array[hole/2]; hole/=2) array[hole] = array[hole/2];
+	array[hole] = val;
 }
 
 // gets the left child of nodeI

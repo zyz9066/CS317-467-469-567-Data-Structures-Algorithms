@@ -32,7 +32,11 @@ private:
 		T value;	// The data in the node
 		struct TreeNode *left;	// Left node
 		struct TreeNode *right;	// Right node
+		
+		TreeNode( const T & element, TreeNode *lt, TreeNode *rt)
+			: value{ element }, left{ lt }, right{ rt } { }
 	};
+	
 	TreeNode *root;	// tree root pointer
 
 	// A function to create a node
@@ -96,14 +100,16 @@ public:
 /**
  * Copy constructor
  */
-BinaryTree(const BinaryTree & rhs) : root{ nullptr } {
+template <typename T>
+BinaryTree<T>::BinaryTree(const BinaryTree & rhs) : root{ nullptr } {
 	root = clone(rhs.root);
 }
 
 /**
  * Internal method to clone subtree
  */
-TreeNode * clone(TreeNode *t) const {
+template <typename T>
+TreeNode * BinaryTree<T>::clone(TreeNode *t) const {
 	if (t == nullptr) return nullptr;
 	else return new TreeNode{ t->value, clone(t->left), clone(t->right) };
 }
@@ -175,10 +181,11 @@ bool BinaryTree<T>::empty() {
  * t is the node that roots the subtree.
  * Set the new root of the subtree.
  */
-void insert(const T & x, TreeNode * & t) {
-	if (t == nullptr) t = createNode(move(x));
-	else if (x < t->value) insert(move(x), t->left);
-	else if (t->value < x) insert(move(x), t->right);
+template <typename T>
+void BinaryTree<T>::insert(const T & x, TreeNode * & t) {
+	if (t == nullptr) t = createNode(x);
+	else if (x < t->value) insert(x, t->left);
+	else if (t->value < x) insert(x, t->right);
 }
 
 // to insert a node in the binary tree
@@ -192,7 +199,8 @@ void BinaryTree<T>::insertNode(T info) {
  * x is item to search for.
  * t is the node that roots the subtree.
  */
-bool contains(const T & x, TreeNode *t) const {
+template <typename T>
+bool BinaryTree<T>::contains(const T & x, TreeNode *t) const {
 	if (t == nullptr) return false;
 	else if (x < t->value) return contains(x, t->left);
 	else if (t->value < x) return contains(x, t->right);
@@ -203,7 +211,8 @@ bool contains(const T & x, TreeNode *t) const {
  * Internal method to find the smallest item in a subtree t.
  * Return node containing the smallest item.
  */
-TreeNode *  findMin(TreeNode *t) const {
+template <typename T>
+TreeNode * BinaryTree<T>::findMin(TreeNode *t) const {
 	if (t == nullptr) return nullptr;
 	if (t->left == nullptr) return t;
 	return findMin(t->left);
@@ -213,7 +222,8 @@ TreeNode *  findMin(TreeNode *t) const {
  * Internal method to find the largest item in a subtree t.
  * Return node containing the largest item.
  */
-TreeNode *  findMax(TreeNode *t) const {
+template <typename T>
+TreeNode * BinaryTree<T>::findMax(TreeNode *t) const {
 	if (t != nullptr) return nullptr;
 	while (t->right != nullptr) t = t->right;
 	return t;
@@ -225,7 +235,8 @@ TreeNode *  findMax(TreeNode *t) const {
  * t is the node that roots the subtree.
  * Set the new root of the subtree.
  */
-void remove(const T & x, TreeNode * & t) {
+template <typename T>
+void BinaryTree<T>::remove(const T & x, TreeNode * & t) {
 	if (t == nullptr) return;	//Item not found; do nothing
 	if (x < t->value) remove(x, t->left);
 	else if (t->value < x) remove(x, t->right);
